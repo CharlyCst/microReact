@@ -17,25 +17,18 @@ export interface VNode<P = {}> {
 export abstract class Component<P = {}, S = {}> {
   props: P;
   abstract state: S;
-  _vNode?: VNode<P>;
-  _child?: VNode;
+  _vNode: VNode<P>;
+  _child: VNode;
 
   constructor(props: P) {
     this.props = props;
-    // this.setState = this.setState.bind(this);
+    this._child = { type: "", props: {}, children: [] };
+    this._vNode = { type: "", props: props, children: [this._child] };
   }
 
   setState(newState: S) {
     this.state = newState;
-    console.log("Setting new state");
-    console.log(newState);
-    console.log(this);
-    if (
-      this._child &&
-      this._vNode &&
-      this._vNode.domElt &&
-      this._vNode.domElt.parentElement
-    ) {
+    if (this._vNode.domElt && this._vNode.domElt.parentElement) {
       this._child = diff(
         this._vNode.domElt.parentElement,
         this.render(),
@@ -46,6 +39,15 @@ export abstract class Component<P = {}, S = {}> {
   }
 
   abstract render(): VNode<any>;
+}
+
+// Render the virtual DOM starting at `vRoot` as a child of `root`
+export function render(vRoot: VNode, root: HTMLElement | null) {
+  if (!root) {
+    return;
+  }
+  const emptyVNode = createElement("div", {});
+  diff(root, vRoot, emptyVNode);
 }
 
 // Create a new virtual node

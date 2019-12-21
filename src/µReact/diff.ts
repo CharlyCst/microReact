@@ -1,5 +1,5 @@
 import { VNode } from "./core";
-import { isDomAttribute, propsAreEqual } from "./utils";
+import { isEventListener, propsAreEqual } from "./utils";
 
 export function diff<P>(
   parentDom: HTMLElement,
@@ -30,7 +30,6 @@ export function diff<P>(
     oldNode.domElt
   ) {
     console.log("Diffing dom elements");
-    console.log(newNode);
     updateDomProperties(oldNode.domElt, newNode, oldNode);
     newNode.domElt = oldNode.domElt;
     diffChildren(oldNode.domElt, newNode, oldNode);
@@ -68,22 +67,24 @@ function diffChildren<P>(
   }
 }
 
-function updateDomProperties<P>(
+function updateDomProperties<P, Q>(
   dom: HTMLElement,
   newNode: VNode<P>,
-  oldNode: VNode<P>
+  oldNode: VNode<Q>
 ) {
   const newProps = newNode.props as { [attr: string]: any };
   const oldProps = oldNode.props as { [attr: string]: any };
 
   for (const attr in oldProps) {
-    if (!(attr in newProps) && isDomAttribute(attr)) {
-      dom.removeAttribute(attr);
+    if (!(attr in newProps) && isEventListener(attr)) {
+      dom.removeEventListener(attr.substring(2), oldProps[attr]);
     }
   }
   for (const attr in newProps) {
-    if (attr in oldProps && newProps[attr] !== oldProps[attr]) {
-      if (isDomAttribute(attr)) dom.setAttribute(attr, newProps[attr]);
+    if (!(attr in oldProps) || newProps[attr] !== oldProps[attr]) {
+      if (isEventListener(attr)) {
+        dom.addEventListener(attr.substring(2), newProps[attr]);
+      }
       if (attr == "textContent") dom.innerHTML = newProps[attr];
     }
   }
@@ -102,7 +103,7 @@ function updateDomProperties<P>(
     }
   }
 }
-
+const emptyVNode = { type: "", props: {}, children: [] };
 // Instanciate the virtual node and all its children
 function instanciate<P>(vNode: VNode<P>): HTMLElement {
   if (vNode.class) {
@@ -117,10 +118,8 @@ function instanciate<P>(vNode: VNode<P>): HTMLElement {
   } else {
     console.log("Instanciationg " + vNode.type);
     let domElt = document.createElement(vNode.type);
-    console.log(vNode.children);
     vNode.children.forEach(child => domElt.appendChild(instanciate(child)));
-    Object.assign(domElt, vNode.props);
-    Object.assign(domElt.style, vNode.props.style);
+    updateDomProperties(domElt, vNode, emptyVNode);
     if (vNode.props.textContent) {
       domElt.textContent = vNode.props.textContent;
     }

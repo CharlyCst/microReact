@@ -1,5 +1,4 @@
-export { createElement, Component } from "./core";
-export { render } from "./render";
+export { createElement, Component, render } from "./core";
 
 declare global {
   namespace JSX {

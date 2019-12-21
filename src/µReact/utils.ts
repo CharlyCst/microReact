@@ -1,5 +1,5 @@
 // Return true if attribute can be interpreted as a dom attribute
-export function isDomAttribute(attribute: string): boolean {
+export function isEventListener(attribute: string): boolean {
   if (attribute.length > 2 && attribute[0] === "o" && attribute[1] === "n") {
     return true;
   }
