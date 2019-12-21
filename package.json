@@ -1,5 +1,5 @@
 {
-  "name": "mini-react",
+  "name": "micro-react",
   "version": "0.1.0",
   "description": "A toy implementation of react",
   "main": "index.js",
