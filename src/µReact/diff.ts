@@ -1,0 +1,129 @@
+import { VNode } from "./core";
+import { isDomAttribute, propsAreEqual } from "./utils";
+
+export function diff<P>(
+  parentDom: HTMLElement,
+  newNode: VNode<P>,
+  oldNode: VNode<P>
+): VNode<P> {
+  if (
+    newNode.class &&
+    oldNode.class &&
+    newNode.class == oldNode.class &&
+    oldNode.component
+  ) {
+    console.log("Diffing component");
+    if (propsAreEqual(oldNode.props, newNode.props)) {
+      return oldNode;
+    } else {
+      const newChild = oldNode.component.render();
+
+      newNode.component = oldNode.component;
+      newNode.domElt = oldNode.domElt;
+      newNode.children = [newChild];
+      diff(parentDom, newChild, oldNode.children[0]);
+      return newNode;
+    }
+  } else if (
+    newNode.type != "" &&
+    newNode.type == oldNode.type &&
+    oldNode.domElt
+  ) {
+    console.log("Diffing dom elements");
+    console.log(newNode);
+    updateDomProperties(oldNode.domElt, newNode, oldNode);
+    newNode.domElt = oldNode.domElt;
+    diffChildren(oldNode.domElt, newNode, oldNode);
+    return newNode;
+  } else {
+    console.log("Instanciating new element");
+    newNode.domElt = instanciate(newNode);
+    if (oldNode.domElt) parentDom.replaceChild(newNode.domElt, oldNode.domElt);
+    parentDom.appendChild(newNode.domElt);
+    return newNode;
+  }
+}
+
+function diffChildren<P>(
+  parentDom: HTMLElement,
+  newParentVNode: VNode<P>,
+  oldParentVNode: VNode<P>
+) {
+  console.log("Diffing childrens");
+  let oldChildren = oldParentVNode.children;
+  let newChildren = newParentVNode.children;
+  for (var i = 0; i < oldChildren.length; i++) {
+    if (i >= newChildren.length) {
+      break;
+    }
+    let oldChild = oldChildren[i];
+    let newChild = newChildren[i];
+
+    if (oldChild.domElt && oldChild != newChild) {
+      diff(parentDom, newChild, oldChild);
+    }
+  }
+  for (i; i < newChildren.length; i++) {
+    parentDom.appendChild(instanciate(newChildren[i]));
+  }
+}
+
+function updateDomProperties<P>(
+  dom: HTMLElement,
+  newNode: VNode<P>,
+  oldNode: VNode<P>
+) {
+  const newProps = newNode.props as { [attr: string]: any };
+  const oldProps = oldNode.props as { [attr: string]: any };
+
+  for (const attr in oldProps) {
+    if (!(attr in newProps) && isDomAttribute(attr)) {
+      dom.removeAttribute(attr);
+    }
+  }
+  for (const attr in newProps) {
+    if (attr in oldProps && newProps[attr] !== oldProps[attr]) {
+      if (isDomAttribute(attr)) dom.setAttribute(attr, newProps[attr]);
+      if (attr == "textContent") dom.innerHTML = newProps[attr];
+    }
+  }
+
+  const newStyle = newNode.props.style || {};
+  const oldStyle = oldNode.props.style || {};
+
+  for (const style in oldStyle) {
+    if (!(style in newStyle)) {
+      dom.style[style] = "";
+    }
+  }
+  for (const style in newStyle) {
+    if (dom.style[style] !== newStyle[style]) {
+      dom.style[style] = newStyle[style] || "";
+    }
+  }
+}
+
+// Instanciate the virtual node and all its children
+function instanciate<P>(vNode: VNode<P>): HTMLElement {
+  if (vNode.class) {
+    console.log("Instantiating " + vNode.class.name);
+    const component = new vNode.class(vNode.props);
+    const child = component.render();
+    vNode.component = component;
+    vNode.children = [child];
+    component._vNode = vNode;
+    component._child = child;
+    return instanciate(child);
+  } else {
+    console.log("Instanciationg " + vNode.type);
+    let domElt = document.createElement(vNode.type);
+    vNode.children.forEach(child => domElt.appendChild(instanciate(child)));
+    Object.assign(domElt, vNode.props);
+    Object.assign(domElt.style, vNode.props.style);
+    if (vNode.props.textContent) {
+      domElt.textContent = vNode.props.textContent;
+    }
+    vNode.domElt = domElt;
+    return domElt;
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "mini-react",
+  "version": "0.1.0",
+  "description": "A toy implementation of react",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack -w",
+    "lite": "lite-server",
+    "start": "concurrently \"npm run watch\" \"npm run lite\" "
+  },
+  "keywords": [
+    "react"
+  ],
+  "author": "Charly Castes",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/lodash": "^4.14.149",
+    "concurrently": "^5.0.0",
+    "lite-server": "^2.5.4",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
+}
