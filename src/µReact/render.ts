@@ -6,6 +6,6 @@ export function render(vRoot: VNode, root: HTMLElement | null) {
   if (!root) {
     return;
   }
-  const emptyVNode = createElement("div", {}, []);
+  const emptyVNode = createElement("div", {});
   diff(root, vRoot, emptyVNode);
 }
