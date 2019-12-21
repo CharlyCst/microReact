@@ -52,10 +52,14 @@ export abstract class Component<P = {}, S = {}> {
 export function createElement<P = {}>(
   type: string | (new (props: P) => Component<P>),
   props: P & baseProps,
-  children?: VNode<any>[] | string | number
+  ...children: VNode<any>[] | string[] | number[]
 ): VNode<P> {
+  if (props == null) props = { ...props }; // TODO typecheck ^^'
+  console.log(children);
+
+  children;
   if (typeof type == "string") {
-    if (typeof children == "string" || typeof children == "number") {
+    if (!isVNodeArray(children)) {
       props.textContent = `${children}`;
       return {
         type: type,
@@ -63,7 +67,8 @@ export function createElement<P = {}>(
         children: []
       };
     }
-    return { type: type, props: props, children: children || [] };
+
+    return { type: type, props: props, children: children };
   } else {
     return {
       type: "",
@@ -72,4 +77,13 @@ export function createElement<P = {}>(
       class: type
     };
   }
+}
+
+function isVNodeArray(
+  array: VNode<any>[] | string[] | number[]
+): array is VNode<any>[] {
+  return !(
+    array.length > 0 &&
+    (typeof array[0] == "string" || typeof array[0] == "number")
+  );
 }

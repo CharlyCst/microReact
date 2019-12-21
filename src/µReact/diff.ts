@@ -117,6 +117,7 @@ function instanciate<P>(vNode: VNode<P>): HTMLElement {
   } else {
     console.log("Instanciationg " + vNode.type);
     let domElt = document.createElement(vNode.type);
+    console.log(vNode.children);
     vNode.children.forEach(child => domElt.appendChild(instanciate(child)));
     Object.assign(domElt, vNode.props);
     Object.assign(domElt.style, vNode.props.style);
