@@ -1,4 +1,5 @@
 import * as µReact from "./µReact/index";
+import { Task } from "./Task";
 
 class App extends µReact.Component {
   state = { clicks: 0 };
@@ -18,7 +19,7 @@ class App extends µReact.Component {
       <div
         style={{
           backgroundColor: "lightgray",
-          height: "100px",
+          height: "200px",
           width: "500px",
           padding: "1px",
           textAlign: "center"
@@ -35,6 +36,7 @@ class App extends µReact.Component {
         >
           Click !
         </button>
+        <Task task="Test" />
       </div>
     );
   }
