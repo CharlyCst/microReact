@@ -4,7 +4,7 @@
   "description": "A toy implementation of react",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --mode=production --output-path=./demo --devtool=false",
     "watch": "webpack -w",
     "lite": "lite-server",
     "start": "concurrently \"npm run watch\" \"npm run lite\" "
