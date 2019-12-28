@@ -14,27 +14,31 @@ export interface VNode<P = {}> {
   component?: Component<P>;
 }
 
+export const emptyVNode = { type: "", props: {}, children: [] };
+
 export abstract class Component<P = {}, S = {}> {
   props: P;
   abstract state: S;
   _vNode: VNode<P>;
-  _child: VNode;
 
   constructor(props: P) {
     this.props = props;
-    this._child = { type: "", props: {}, children: [] };
-    this._vNode = { type: "", props: props, children: [this._child] };
+    this._vNode = {
+      type: "",
+      props: props,
+      children: [emptyVNode]
+    };
   }
 
   setState(newState: S) {
     this.state = newState;
-    if (this._vNode.domElt && this._vNode.domElt.parentElement) {
-      this._child = diff(
-        this._vNode.domElt.parentElement,
+    const child = this._vNode.children[0];
+    if (child.domElt && child.domElt.parentElement) {
+      this._vNode.children[0] = diff(
+        child.domElt.parentElement,
         this.render(),
-        this._child
+        child
       );
-      this._child.domElt = this._vNode.domElt;
     }
   }
 

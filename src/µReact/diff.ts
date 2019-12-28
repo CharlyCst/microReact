@@ -1,4 +1,4 @@
-import { VNode } from "./core";
+import { VNode, emptyVNode } from "./core";
 import { isEventListener, propsAreEqual } from "./utils";
 
 export function diff<P>(
@@ -16,12 +16,13 @@ export function diff<P>(
     if (propsAreEqual(oldNode.props, newNode.props)) {
       return oldNode;
     } else {
+      const oldChild = oldNode.children[0];
       const newChild = oldNode.component.render();
 
       newNode.component = oldNode.component;
       newNode.domElt = oldNode.domElt;
       newNode.children = [newChild];
-      diff(parentDom, newChild, oldNode.children[0]);
+      diff(parentDom, newChild, oldChild);
       return newNode;
     }
   } else if (
@@ -103,7 +104,7 @@ function updateDomProperties<P, Q>(
     }
   }
 }
-const emptyVNode = { type: "", props: {}, children: [] };
+
 // Instanciate the virtual node and all its children
 function instanciate<P>(vNode: VNode<P>): HTMLElement {
   if (vNode.class) {
@@ -113,11 +114,10 @@ function instanciate<P>(vNode: VNode<P>): HTMLElement {
     vNode.component = component;
     vNode.children = [child];
     component._vNode = vNode;
-    component._child = child;
     return instanciate(child);
   } else {
     console.log("Instanciationg " + vNode.type);
-    let domElt = document.createElement(vNode.type);
+    const domElt = document.createElement(vNode.type);
     vNode.children.forEach(child => domElt.appendChild(instanciate(child)));
     updateDomProperties(domElt, vNode, emptyVNode);
     if (vNode.props.textContent) {
