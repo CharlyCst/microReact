@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --mode=production --env.production --output-path=./demo --devtool=false",
     "watch": "webpack -w",
-    "lite": "lite-server",
+    "lite": "lite-server --baseDir='dist'",
     "start": "concurrently \"npm run watch\" \"npm run lite\" "
   },
   "keywords": [
