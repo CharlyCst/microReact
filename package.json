@@ -4,7 +4,7 @@
   "description": "A toy implementation of react",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --mode=production --output-path=./demo --devtool=false",
+    "build": "webpack --mode=production --env.production --output-path=./demo --devtool=false",
     "watch": "webpack -w",
     "lite": "lite-server",
     "start": "concurrently \"npm run watch\" \"npm run lite\" "
@@ -17,6 +17,8 @@
   "devDependencies": {
     "@types/lodash": "^4.14.149",
     "concurrently": "^5.0.0",
+    "html-webpack-inline-source-plugin": "1.0.0-beta.2",
+    "html-webpack-plugin": "^4.0.0-beta.11",
     "lite-server": "^2.5.4",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.1",
