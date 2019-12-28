@@ -2,13 +2,13 @@ const HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = env => {
-  console.log(env);
   // Add inline plugging in production mode
   const plugins =
     env && env.production
       ? [
           new HtmlWebpackPlugin({
-            inlineSource: ".(ts|tsx|jsx|js|css)$"
+            inlineSource: ".(ts|tsx|jsx|js|css)$",
+            template: "index.html"
           }),
           new HtmlWebpackInlineSourcePlugin(HtmlWebpackPlugin)
         ]
