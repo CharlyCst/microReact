@@ -2,6 +2,16 @@ const HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = env => {
+  const pluggins = [
+    new HtmlWebpackPlugin({
+      inlineSource: ".(ts|tsx|jsx|js|css)$",
+      template: "index.html"
+    })
+  ];
+  // Inline JS for production build
+  if (env && env.production)
+    pluggins.push(new HtmlWebpackInlineSourcePlugin(HtmlWebpackPlugin));
+
   return {
     mode: "development",
 
@@ -35,12 +45,6 @@ module.exports = env => {
       ]
     },
 
-    plugins: [
-      new HtmlWebpackPlugin({
-        inlineSource: ".(ts|tsx|jsx|js|css)$",
-        template: "index.html"
-      }),
-      new HtmlWebpackInlineSourcePlugin(HtmlWebpackPlugin)
-    ]
+    plugins: pluggins
   };
 };
