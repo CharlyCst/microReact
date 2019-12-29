@@ -12,7 +12,7 @@ export function diff<P>(
     newNode.class == oldNode.class &&
     oldNode.component
   ) {
-    console.log("Diffing component");
+    console.log("Diffing component " + newNode.class.name);
     if (propsAreEqual(oldNode.props, newNode.props)) {
       return oldNode;
     } else {
@@ -30,13 +30,12 @@ export function diff<P>(
     newNode.type == oldNode.type &&
     oldNode.domElt
   ) {
-    console.log("Diffing dom elements");
+    console.log("Diffing dom element " + newNode.type);
     updateDomProperties(oldNode.domElt, newNode, oldNode);
     newNode.domElt = oldNode.domElt;
     diffChildren(oldNode.domElt, newNode, oldNode);
     return newNode;
   } else {
-    console.log("Instanciating new element");
     newNode.domElt = instanciate(newNode);
     if (oldNode.domElt) parentDom.replaceChild(newNode.domElt, oldNode.domElt);
     parentDom.appendChild(newNode.domElt);
@@ -49,7 +48,6 @@ function diffChildren<P>(
   newParentVNode: VNode<P>,
   oldParentVNode: VNode<P>
 ) {
-  console.log("Diffing childrens");
   let oldChildren = oldParentVNode.children;
   let newChildren = newParentVNode.children;
   for (var i = 0; i < oldChildren.length; i++) {
@@ -116,7 +114,7 @@ function instanciate<P>(vNode: VNode<P>): HTMLElement {
     component._vNode = vNode;
     return instanciate(child);
   } else {
-    console.log("Instanciationg " + vNode.type);
+    console.log("Instanciating " + vNode.type);
     const domElt = document.createElement(vNode.type);
     vNode.children.forEach(child => domElt.appendChild(instanciate(child)));
     updateDomProperties(domElt, vNode, emptyVNode);

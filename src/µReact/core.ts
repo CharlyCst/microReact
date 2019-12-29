@@ -60,8 +60,7 @@ export function createElement<P = {}>(
   props: P & baseProps,
   ...children: VNode<any>[] | string[] | number[]
 ): VNode<P> {
-  if (props == null) props = { ...props }; // TODO typecheck ^^'
-  console.log(children);
+  if (props == null) props = { ...props }; // JSX can input null props
 
   children;
   if (typeof type == "string") {
