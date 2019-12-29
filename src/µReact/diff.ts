@@ -16,13 +16,15 @@ export function diff<P>(
     if (propsAreEqual(oldNode.props, newNode.props)) {
       return oldNode;
     } else {
-      const oldChild = oldNode.children[0];
+      const oldChild = oldNode.props.children[0];
       const newChild = oldNode.component.render();
 
       newNode.component = oldNode.component;
       newNode.domElt = oldNode.domElt;
-      newNode.children = [newChild];
-      diff(parentDom, newChild, oldChild);
+      newNode.props.children = [newChild];
+      if (!(typeof oldChild == "string")) {
+        diff(parentDom, newChild, oldChild);
+      }
       return newNode;
     }
   } else if (
@@ -48,21 +50,26 @@ function diffChildren<P>(
   newParentVNode: VNode<P>,
   oldParentVNode: VNode<P>
 ) {
-  let oldChildren = oldParentVNode.children;
-  let newChildren = newParentVNode.children;
-  for (var i = 0; i < oldChildren.length; i++) {
-    if (i >= newChildren.length) {
-      break;
-    }
-    let oldChild = oldChildren[i];
-    let newChild = newChildren[i];
+  let oldChildren = oldParentVNode.props.children;
+  let newChildren = newParentVNode.props.children;
+  var i = 0;
+  if (typeof oldChildren != "string" && typeof newChildren != "string") {
+    for (i; i < oldChildren.length; i++) {
+      if (i >= newChildren.length) {
+        break;
+      }
+      let oldChild = oldChildren[i];
+      let newChild = newChildren[i];
 
-    if (oldChild.domElt && oldChild != newChild) {
-      diff(parentDom, newChild, oldChild);
+      if (oldChild.domElt && oldChild != newChild) {
+        diff(parentDom, newChild, oldChild);
+      }
     }
   }
-  for (i; i < newChildren.length; i++) {
-    parentDom.appendChild(instanciate(newChildren[i]));
+  if (typeof newChildren != "string") {
+    for (i; i < newChildren.length; i++) {
+      parentDom.appendChild(instanciate(newChildren[i]));
+    }
   }
 }
 
@@ -71,6 +78,7 @@ function updateDomProperties<P, Q>(
   newNode: VNode<P>,
   oldNode: VNode<Q>
 ) {
+  // Update attributes and event listeners
   const newProps = newNode.props as { [attr: string]: any };
   const oldProps = oldNode.props as { [attr: string]: any };
 
@@ -88,6 +96,7 @@ function updateDomProperties<P, Q>(
     }
   }
 
+  // Update style
   const newStyle = newNode.props.style || {};
   const oldStyle = oldNode.props.style || {};
 
@@ -101,6 +110,13 @@ function updateDomProperties<P, Q>(
       dom.style[style] = newStyle[style] || "";
     }
   }
+
+  // Update text content
+  if (typeof newNode.props.children == "string") {
+    dom.textContent = newNode.props.children;
+  } else if (typeof oldNode.props.children == "string") {
+    dom.textContent = "";
+  }
 }
 
 // Instanciate the virtual node and all its children
@@ -110,17 +126,18 @@ function instanciate<P>(vNode: VNode<P>): HTMLElement {
     const component = new vNode.class(vNode.props);
     const child = component.render();
     vNode.component = component;
-    vNode.children = [child];
+    vNode.props.children = [child];
     component._vNode = vNode;
     return instanciate(child);
   } else {
     console.log("Instanciating " + vNode.type);
     const domElt = document.createElement(vNode.type);
-    vNode.children.forEach(child => domElt.appendChild(instanciate(child)));
-    updateDomProperties(domElt, vNode, emptyVNode);
-    if (vNode.props.textContent) {
-      domElt.textContent = vNode.props.textContent;
+    if (!(typeof vNode.props.children == "string")) {
+      vNode.props.children.forEach(child =>
+        domElt.appendChild(instanciate(child))
+      );
     }
+    updateDomProperties(domElt, vNode, emptyVNode);
     vNode.domElt = domElt;
     return domElt;
   }

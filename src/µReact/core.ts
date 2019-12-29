@@ -1,20 +1,20 @@
 import { diff } from "./diff";
 
-type baseProps = { style?: Partial<CSSStyleDeclaration> } & Partial<
-  GlobalEventHandlers
-> & { textContent?: string };
+type baseProps = {
+  children: VNode[] | string;
+  style?: Partial<CSSStyleDeclaration>;
+};
 
 // Virtual nodes are the elements that compose µReact's virtual dom
 export interface VNode<P = {}> {
   type: string;
   props: P & baseProps;
-  children: VNode[];
   domElt?: HTMLElement;
   class?: new (props: P) => Component<P>;
   component?: Component<P>;
 }
 
-export const emptyVNode = { type: "", props: {}, children: [] };
+export const emptyVNode = { type: "", props: { children: [] } };
 
 export abstract class Component<P = {}, S = {}> {
   props: P;
@@ -25,20 +25,19 @@ export abstract class Component<P = {}, S = {}> {
     this.props = props;
     this._vNode = {
       type: "",
-      props: props,
-      children: [emptyVNode]
+      props: { ...props, children: [emptyVNode] }
     };
   }
 
   setState(newState: S) {
     this.state = newState;
-    const child = this._vNode.children[0];
+
+    const children = this._vNode.props.children;
+    if (typeof children == "string") return;
+    const child = children[0];
+
     if (child.domElt && child.domElt.parentElement) {
-      this._vNode.children[0] = diff(
-        child.domElt.parentElement,
-        this.render(),
-        child
-      );
+      children[0] = diff(child.domElt.parentElement, this.render(), child);
     }
   }
 
@@ -57,33 +56,33 @@ export function render(vRoot: VNode, root: HTMLElement | null) {
 // Create a new virtual node
 export function createElement<P = {}>(
   type: string | (new (props: P) => Component<P>),
-  props: P & baseProps,
+  props: P,
   ...children: VNode<any>[] | string[] | number[]
 ): VNode<P> {
-  if (props == null) props = { ...props }; // JSX can input null props
+  const normalizedProps = {
+    ...props,
+    children: isVNodeArray(children) ? children : `${children}`
+  };
 
-  children;
   if (typeof type == "string") {
     if (!isVNodeArray(children)) {
-      props.textContent = `${children}`;
       return {
         type: type,
-        props: props,
-        children: []
+        props: normalizedProps
       };
     }
 
-    return { type: type, props: props, children: children };
+    return { type: type, props: { ...props, children: children } };
   } else {
     return {
       type: "",
-      props: props,
-      children: [],
+      props: normalizedProps,
       class: type
     };
   }
 }
 
+// Type guard
 function isVNodeArray(
   array: VNode<any>[] | string[] | number[]
 ): array is VNode<any>[] {
