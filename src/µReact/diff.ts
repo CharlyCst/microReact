@@ -83,16 +83,21 @@ function updateDomProperties<P, Q>(
   const oldProps = oldNode.props as { [attr: string]: any };
 
   for (const attr in oldProps) {
-    if (!(attr in newProps) && isEventListener(attr)) {
-      dom.removeEventListener(attr.substring(2), oldProps[attr]);
+    if (!(attr in newProps)) {
+      if (isEventListener(attr)) {
+        dom.removeEventListener(attr.substring(2), oldProps[attr]);
+      } else {
+        dom.removeAttribute(attr);
+      }
     }
   }
   for (const attr in newProps) {
     if (!(attr in oldProps) || newProps[attr] !== oldProps[attr]) {
       if (isEventListener(attr)) {
         dom.addEventListener(attr.substring(2), newProps[attr]);
+      } else if (typeof newProps[attr] == "string") {
+        dom.setAttribute(attr, newProps[attr]);
       }
-      if (attr == "textContent") dom.innerHTML = newProps[attr];
     }
   }
 
@@ -113,9 +118,9 @@ function updateDomProperties<P, Q>(
 
   // Update text content
   if (typeof newNode.props.children == "string") {
-    dom.textContent = newNode.props.children;
+    dom.innerHTML = newNode.props.children;
   } else if (typeof oldNode.props.children == "string") {
-    dom.textContent = "";
+    dom.innerHTML = "";
   }
 }
 
