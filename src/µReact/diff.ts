@@ -16,14 +16,17 @@ export function diff<P>(
     if (propsAreEqual(oldNode.props, newNode.props)) {
       return oldNode;
     } else {
+      newNode.domElt = oldNode.domElt;
+      newNode.component = oldNode.component;
+      newNode.component.props = newNode.props;
+
       const oldChild = oldNode.props.children[0];
       const newChild = oldNode.component.render();
 
-      newNode.component = oldNode.component;
-      newNode.domElt = oldNode.domElt;
-      newNode.props.children = [newChild];
       if (!(typeof oldChild == "string")) {
-        diff(parentDom, newChild, oldChild);
+        newNode.props.children = [diff(parentDom, newChild, oldChild)];
+      } else {
+        newNode.props.children = [newChild];
       }
       return newNode;
     }
@@ -56,13 +59,15 @@ function diffChildren<P>(
   if (typeof oldChildren != "string" && typeof newChildren != "string") {
     for (i; i < oldChildren.length; i++) {
       if (i >= newChildren.length) {
+        for (let j = i; j < oldChildren.length; j++) {
+          removeFromDOM(oldChildren[j]);
+        }
         break;
       }
       let oldChild = oldChildren[i];
       let newChild = newChildren[i];
-
-      if (oldChild.domElt && oldChild != newChild) {
-        diff(parentDom, newChild, oldChild);
+      if (oldChild != newChild) {
+        newChildren[i] = diff(parentDom, newChild, oldChild);
       }
     }
   }
@@ -70,6 +75,14 @@ function diffChildren<P>(
     for (i; i < newChildren.length; i++) {
       parentDom.appendChild(instanciate(newChildren[i]));
     }
+  }
+}
+
+function removeFromDOM<P>(node: VNode<P>) {
+  if (node.domElt) {
+    node.domElt.remove();
+  } else if (typeof node.props.children != "string") {
+    node.props.children.forEach(child => removeFromDOM(child));
   }
 }
 
