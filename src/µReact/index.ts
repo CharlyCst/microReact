@@ -1,14 +1,20 @@
 export { createElement, Component, render } from "./core";
 
-// Provide typechecking for event handler and style properties
-type intrinsicElementsProps = any & {
-  style?: Partial<CSSStyleDeclaration>;
-} & Partial<GlobalEventHandlers>;
+// Provide typechecking for some event handler and style properties
+type intrinsicElementsProps = {
+  style: Partial<CSSStyleDeclaration>;
+  onchange: (event: {
+    target: HTMLElement & Partial<HTMLInputElement>;
+  }) => void;
+  onclick: () => void;
+};
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      [elemName: string]: intrinsicElementsProps;
+      [elemName: string]: {
+        [attr: string]: any;
+      } & Partial<intrinsicElementsProps>;
     }
   }
 }

@@ -83,7 +83,7 @@ function updateDomProperties<P, Q>(
   const oldProps = oldNode.props as { [attr: string]: any };
 
   for (const attr in oldProps) {
-    if (!(attr in newProps)) {
+    if (!(attr in newProps) || newProps[attr] !== oldProps[attr]) {
       if (isEventListener(attr)) {
         dom.removeEventListener(attr.substring(2), oldProps[attr]);
       } else {
@@ -97,6 +97,10 @@ function updateDomProperties<P, Q>(
         dom.addEventListener(attr.substring(2), newProps[attr]);
       } else if (typeof newProps[attr] == "string") {
         dom.setAttribute(attr, newProps[attr]);
+        // Value of InputElement is not update if set with setAttribute
+        if (attr == "value" && "value" in (dom as HTMLInputElement)) {
+          (dom as HTMLInputElement).value = newProps[attr];
+        }
       }
     }
   }
@@ -137,7 +141,7 @@ function instanciate<P>(vNode: VNode<P>): HTMLElement {
   } else {
     console.log("Instanciating " + vNode.type);
     const domElt = document.createElement(vNode.type);
-    if (!(typeof vNode.props.children == "string")) {
+    if (typeof vNode.props.children != "string") {
       vNode.props.children.forEach(child =>
         domElt.appendChild(instanciate(child))
       );

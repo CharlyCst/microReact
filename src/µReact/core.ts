@@ -29,8 +29,8 @@ export abstract class Component<P = {}, S = {}> {
     };
   }
 
-  setState(newState: S) {
-    this.state = newState;
+  setState(newState: Partial<S>) {
+    this.state = { ...this.state, ...newState };
 
     const children = this._vNode.props.children;
     if (typeof children == "string") return;
@@ -57,11 +57,11 @@ export function render(vRoot: VNode, root: HTMLElement | null) {
 export function createElement<P = {}>(
   type: string | (new (props: P) => Component<P>),
   props: P,
-  ...children: VNode<any>[] | string[] | number[]
+  ...children: (VNode<any> | VNode<any>[])[] | (string | number)[]
 ): VNode<P> {
   const normalizedProps = {
     ...props,
-    children: isVNodeArray(children) ? children : `${children}`
+    children: isVNodeArray(children) ? flatten(children) : `${children}`
   };
 
   if (typeof type == "string") {
@@ -71,8 +71,7 @@ export function createElement<P = {}>(
         props: normalizedProps
       };
     }
-
-    return { type: type, props: { ...props, children: children } };
+    return { type: type, props: normalizedProps };
   } else {
     return {
       type: "",
@@ -84,10 +83,22 @@ export function createElement<P = {}>(
 
 // Type guard
 function isVNodeArray(
-  array: VNode<any>[] | string[] | number[]
-): array is VNode<any>[] {
+  array: (VNode<any> | VNode<any>[])[] | (string | number)[]
+): array is (VNode<any> | VNode<any>[])[] {
   return !(
     array.length > 0 &&
     (typeof array[0] == "string" || typeof array[0] == "number")
   );
+}
+
+// Needed to flatten JSX children array
+function flatten<P>(arr: (P | P[])[]): P[] {
+  return arr.reduce<P[]>((acc, val) => {
+    if (Array.isArray(val)) {
+      acc = acc.concat(val);
+    } else {
+      acc.push(val);
+    }
+    return acc;
+  }, []);
 }
