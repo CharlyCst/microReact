@@ -55,7 +55,8 @@ export class List extends µReact.Component<{}, IListState> {
 
 const containerStyle = {
   backgroundColor: "white",
-  width: "500px",
+  maxWidth: "500px",
+  width: "80%",
   textAlign: "center",
   margin: "auto",
   padding: "1rem",
@@ -72,13 +73,7 @@ const textInputStyle = {
 
 const buttonStyle = {
   fontWeight: "bold",
-  marginLeft: "1rem",
+  margin: "1rem",
+  marginBottom: "0",
   minHeight: "2rem"
-  // padding: "0.5rem",
-  // border: "none",
-  // borderRadius: "0.7rem"
-  // backgroundColor: "#5aff15",
-  // backgroundImage: "linear-gradient(315deg, #5aff15 0%, #5aff15 74%)",
-  // boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)",
-  // cursor: "pointer"
 };
