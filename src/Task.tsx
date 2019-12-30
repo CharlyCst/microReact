@@ -49,8 +49,8 @@ const todoStyle = {
 };
 
 const doneStyle = {
-  backgroundColor: "#2a2a72",
-  backgroundImage: "linear-gradient(315deg, #2a2a72 0%, #009ffd 74%)"
+  backgroundColor: "#fa9c05",
+  backgroundImage: "linear-gradient(315deg, #fa9c05 0%, #ffdd00 74%)"
 };
 
 const textStyle = {
