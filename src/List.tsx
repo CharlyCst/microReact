@@ -16,11 +16,17 @@ export class List extends µReact.Component<{}, IListState> {
     super(props);
   }
 
+  deleteTask = (idx: number) => () => {
+    const newTasks = this.state.tasks;
+    newTasks.splice(idx, 1);
+    this.setState({ tasks: newTasks });
+  };
+
   render() {
     return (
       <div style={containerStyle}>
         <h3>µReact Todo list</h3>
-        <form>
+        <div>
           <input
             type="text"
             name="task"
@@ -44,9 +50,9 @@ export class List extends µReact.Component<{}, IListState> {
               });
             }}
           />
-        </form>
-        {this.state.tasks.map(task => (
-          <Task task={task} />
+        </div>
+        {this.state.tasks.map((task, idx) => (
+          <Task task={task} delete={this.deleteTask(idx)} />
         ))}
       </div>
     );
@@ -73,7 +79,6 @@ const textInputStyle = {
 
 const buttonStyle = {
   fontWeight: "bold",
-  margin: "1rem",
-  marginBottom: "0",
+  margin: "0.7rem",
   minHeight: "2rem"
 };

@@ -6,6 +6,7 @@ interface ITaskState {
 
 interface ITaskProps {
   task: string;
+  delete: () => void;
 }
 
 export class Task extends µReact.Component<ITaskProps, ITaskState> {
@@ -23,22 +24,42 @@ export class Task extends µReact.Component<ITaskProps, ITaskState> {
     }
 
     return (
-      <div
-        style={{ ...backgroundStyle, ...containerStyle }}
-        onclick={this.onClick}
-      >
-        <p style={textStyle}>{this.props.task}</p>
+      <div style={containerStyle}>
+        <div style={removeStyle} onclick={this.props.delete} />
+        <div
+          style={{ ...backgroundStyle, ...taskStyle }}
+          onclick={this.onClick}
+        >
+          <p style={textStyle}>{this.props.task}</p>
+        </div>
       </div>
     );
   }
 }
 
 const containerStyle = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center"
+};
+
+const taskStyle = {
   fontWeight: "bold",
   borderRadius: "0.7rem",
   minHeight: "2rem",
+  flex: "1",
   display: "flex",
   margin: "0.7rem",
+  boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)",
+  cursor: "pointer"
+};
+
+const removeStyle = {
+  width: "1.5rem",
+  height: "1.5rem",
+  borderRadius: "1rem",
+  backgroundColor: "#FFFF00",
+  backgroundImage: "linear-gradient(315deg, #FF1A1A 0%, #FFFF00 74%)",
   boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)",
   cursor: "pointer"
 };
