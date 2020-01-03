@@ -1,7 +1,10 @@
 import { diff } from "./diff";
 
+type children = VNode[] | string;
+
+// The minimal properties of a virtual node
 type baseProps = {
-  children: VNode[] | string;
+  children: children;
   style?: Partial<CSSStyleDeclaration>;
 };
 
