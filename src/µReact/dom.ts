@@ -74,6 +74,7 @@ export function instanciate<P>(vNode: VNode<P>): HTMLElement {
     vNode.component = component;
     vNode.props.children = [child];
     component._vNode = vNode;
+    component.componentDidMount();
     return instanciate(child);
   } else {
     console.log("Instanciating " + vNode.type);

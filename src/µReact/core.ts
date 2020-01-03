@@ -44,6 +44,8 @@ export abstract class Component<P = {}, S = {}> {
     }
   }
 
+  componentDidMount() {}
+
   abstract render(): VNode<any>;
 }
 
