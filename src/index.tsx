@@ -1,4 +1,4 @@
-import µReact from "µReact";
+import µReact from "./µReact";
 import { List } from "./List";
 
 const style = {

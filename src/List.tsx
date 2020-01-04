@@ -1,4 +1,4 @@
-import µReact from "µReact";
+import µReact from "./µReact";
 import { Task } from "./Task";
 
 interface IListState {

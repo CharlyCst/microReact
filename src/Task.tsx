@@ -1,4 +1,4 @@
-import µReact from "µReact";
+import µReact from "./µReact";
 
 interface ITaskState {
   completed: boolean;
