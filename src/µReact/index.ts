@@ -1,4 +1,13 @@
-export { createElement, Component, render } from "./core";
+import { createElement, Component } from "./core";
+import { render } from "./dom";
+
+const µReact = {
+  createElement,
+  Component,
+  render
+};
+
+export default µReact;
 
 // Provide typechecking for some event handler and style properties
 type intrinsicElementsProps = {

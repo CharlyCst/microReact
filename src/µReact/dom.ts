@@ -1,4 +1,5 @@
 import { VNode, emptyVNode } from "./core";
+import { diff } from "./diff";
 import { isEventListener } from "./utils";
 
 export function removeFromDOM<P>(node: VNode<P>) {
@@ -87,5 +88,12 @@ export function instanciate<P>(vNode: VNode<P>): HTMLElement {
     updateDomProperties(domElt, vNode, emptyVNode);
     vNode.domElt = domElt;
     return domElt;
+  }
+}
+
+// Render the virtual DOM starting at `vRoot` as a child of `root`
+export function render(vRoot: VNode, root: HTMLElement | null) {
+  if (root) {
+    diff(root, vRoot, emptyVNode);
   }
 }

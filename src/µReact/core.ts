@@ -20,8 +20,8 @@ export interface VNode<P = {}> {
 export const emptyVNode = { type: "", props: { children: [] } };
 
 export abstract class Component<P = {}, S = {}> {
-  props: P;
   abstract state: S;
+  props: P;
   _vNode: VNode<P>;
 
   constructor(props: P) {
@@ -31,6 +31,9 @@ export abstract class Component<P = {}, S = {}> {
       props: { ...props, children: [emptyVNode] }
     };
   }
+
+  abstract render(): VNode<any>;
+  componentDidMount() {}
 
   setState(newState: Partial<S>) {
     this.state = { ...this.state, ...newState };
@@ -43,19 +46,6 @@ export abstract class Component<P = {}, S = {}> {
       children[0] = diff(child.domElt.parentElement, this.render(), child);
     }
   }
-
-  componentDidMount() {}
-
-  abstract render(): VNode<any>;
-}
-
-// Render the virtual DOM starting at `vRoot` as a child of `root`
-export function render(vRoot: VNode, root: HTMLElement | null) {
-  if (!root) {
-    return;
-  }
-  const emptyVNode = createElement("div", {});
-  diff(root, vRoot, emptyVNode);
 }
 
 // Create a new virtual node
@@ -70,12 +60,6 @@ export function createElement<P = {}>(
   };
 
   if (typeof type == "string") {
-    if (!isVNodeArray(children)) {
-      return {
-        type: type,
-        props: normalizedProps
-      };
-    }
     return { type: type, props: normalizedProps };
   } else {
     return {
@@ -86,7 +70,7 @@ export function createElement<P = {}>(
   }
 }
 
-// Type guard
+// Type guard to decide if `array` is a (nested) array of VNode
 function isVNodeArray(
   array: (VNode<any> | VNode<any>[])[] | (string | number)[]
 ): array is (VNode<any> | VNode<any>[])[] {
