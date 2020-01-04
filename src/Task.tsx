@@ -1,4 +1,4 @@
-import * as µReact from "./µReact/index";
+import µReact from "µReact";
 
 interface ITaskState {
   completed: boolean;
@@ -55,11 +55,11 @@ const taskStyle = {
 };
 
 const removeStyle = {
-  width: "1.5rem",
-  height: "1.5rem",
+  width: "1.2rem",
+  height: "1.2rem",
   borderRadius: "1rem",
-  backgroundColor: "#FFFF00",
-  backgroundImage: "linear-gradient(315deg, #FF1A1A 0%, #FFFF00 74%)",
+  backgroundColor: "#ff4601",
+  backgroundImage: "linear-gradient(315deg, #FF1A1A 0%, #ff4601 74%)",
   boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)",
   cursor: "pointer"
 };
