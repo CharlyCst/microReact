@@ -1,6 +1,6 @@
 import { VNode } from "./core";
 import { propsAreEqual } from "./utils";
-import { updateDomProperties, instanciate, removeFromDOM } from "./dom";
+import { updateDomProperties, instantiate, removeFromDOM } from "./dom";
 
 export function diff<P>(
   parentDom: HTMLElement,
@@ -42,7 +42,7 @@ export function diff<P>(
     diffChildren(oldNode.domElt, newNode, oldNode);
     return newNode;
   } else {
-    newNode.domElt = instanciate(newNode);
+    newNode.domElt = instantiate(newNode);
     if (oldNode.domElt) parentDom.replaceChild(newNode.domElt, oldNode.domElt);
     parentDom.appendChild(newNode.domElt);
     return newNode;
@@ -74,7 +74,7 @@ function diffChildren<P>(
   }
   if (typeof newChildren != "string") {
     for (i; i < newChildren.length; i++) {
-      parentDom.appendChild(instanciate(newChildren[i]));
+      parentDom.appendChild(instantiate(newChildren[i]));
     }
   }
 }

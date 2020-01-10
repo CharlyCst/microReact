@@ -35,7 +35,7 @@ export function updateDomProperties<P, Q>(
         dom.addEventListener(attr.substring(2), newProps[attr]);
       } else if (typeof newProps[attr] == "string") {
         dom.setAttribute(attr, newProps[attr]);
-        // Value of InputElement is not update if set with setAttribute
+        // Value of InputElement is not updated if set with setAttribute
         if (attr == "value" && "value" in (dom as HTMLInputElement)) {
           (dom as HTMLInputElement).value = newProps[attr];
         }
@@ -66,8 +66,8 @@ export function updateDomProperties<P, Q>(
   }
 }
 
-// Instanciate the virtual node and all its children
-export function instanciate<P>(vNode: VNode<P>): HTMLElement {
+// Instantiate the virtual node and all its children
+export function instantiate<P>(vNode: VNode<P>): HTMLElement {
   if (vNode.class) {
     console.log("Instantiating " + vNode.class.name);
     const component = new vNode.class(vNode.props);
@@ -76,13 +76,13 @@ export function instanciate<P>(vNode: VNode<P>): HTMLElement {
     vNode.props.children = [child];
     component._vNode = vNode;
     component.componentDidMount();
-    return instanciate(child);
+    return instantiate(child);
   } else {
-    console.log("Instanciating " + vNode.type);
+    console.log("Instantiating " + vNode.type);
     const domElt = document.createElement(vNode.type);
     if (typeof vNode.props.children != "string") {
       vNode.props.children.forEach(child =>
-        domElt.appendChild(instanciate(child))
+        domElt.appendChild(instantiate(child))
       );
     }
     updateDomProperties(domElt, vNode, emptyVNode);
