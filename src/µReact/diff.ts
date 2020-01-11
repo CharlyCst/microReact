@@ -2,11 +2,11 @@ import { VNode } from "./core";
 import { propsAreEqual } from "./utils";
 import { updateDomProperties, instantiate, removeFromDOM } from "./dom";
 
-export function diff<P>(
+export function diff(
   parentDom: HTMLElement,
-  newNode: VNode<P>,
-  oldNode: VNode<P>
-): VNode<P> {
+  newNode: VNode,
+  oldNode: VNode
+): VNode {
   if (
     newNode.class &&
     oldNode.class &&
@@ -49,10 +49,10 @@ export function diff<P>(
   }
 }
 
-function diffChildren<P>(
+function diffChildren(
   parentDom: HTMLElement,
-  newParentVNode: VNode<P>,
-  oldParentVNode: VNode<P>
+  newParentVNode: VNode,
+  oldParentVNode: VNode
 ) {
   let oldChildren = oldParentVNode.props.children;
   let newChildren = newParentVNode.props.children;
