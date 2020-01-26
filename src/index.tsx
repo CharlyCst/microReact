@@ -8,10 +8,10 @@ const style = {
   display: "flex"
 };
 
-const app = (
+const App = (
   <div style={style}>
     <List />
   </div>
 );
 
-µReact.render(app, document.getElementById("app"));
+µReact.render(App, document.getElementById("app"));

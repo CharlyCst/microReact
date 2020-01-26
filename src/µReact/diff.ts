@@ -24,7 +24,7 @@ export function diff(
       const oldChild = oldNode.props.children[0];
       const newChild = oldNode.component.render();
 
-      if (!(typeof oldChild == "string")) {
+      if (typeof oldChild != "string") {
         newNode.props.children = [diff(parentDom, newChild, oldChild)];
       } else {
         newNode.props.children = [newChild];
@@ -45,6 +45,7 @@ export function diff(
     newNode.domElt = instantiate(newNode);
     if (oldNode.domElt) parentDom.replaceChild(newNode.domElt, oldNode.domElt);
     parentDom.appendChild(newNode.domElt);
+    if (newNode.component) newNode.component.componentDidMount();
     return newNode;
   }
 }

@@ -75,7 +75,6 @@ export function instantiate<P>(vNode: VNode<P>): HTMLElement {
     vNode.component = component;
     vNode.props.children = [child];
     component._vNode = vNode;
-    component.componentDidMount();
     return instantiate(child);
   } else {
     console.log("Instantiating " + vNode.type);
